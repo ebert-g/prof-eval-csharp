@@ -1,125 +1,88 @@
-# 👨‍🏫 Avaliação UCSAL - Sistema de Avaliação de Professores
+# 🎓 Avaliação UCSAL - Sistema de Avaliação de Professores
 
-Sistema de avaliação de professores da UCSAL migrado e integrado em **C# (.NET 8)** com **Entity Framework Core (PostgreSQL)** e interface web responsiva integrada (Razor Pages).
+Sistema para avaliação acadêmica de docentes da Universidade Católica do Salvador (UCSAL). O projeto foi desenvolvido com uma arquitetura moderna e unificada utilizando **C# (.NET 8)**, **Entity Framework Core (PostgreSQL)** e uma interface de página única (SPA) responsiva integrada.
 
 ---
 
-## 🏗️ Arquitetura Unificada
+## 🚀 Funcionalidades Principais
 
-O frontend e o backend agora são executados a partir de um único processo do .NET. O backend fornece tanto os endpoints de API REST quanto a página web de visualização:
+*   **SPA (Single Page Application)**: Interface rápida e dinâmica integrada diretamente no servidor .NET, sem necessidade de dependências pesadas de frontend.
+*   **Design Institucional UCSAL**: Layout acadêmico limpo seguindo o padrão cromático institucional (tons de azul corporativo, branco e bordas em cinza suave).
+*   **Avaliações Anônimas**: Arquitetura projetada para desvincular estritamente a identidade do estudante do voto gravado na base de dados (utilizando tokens hash SHA-256 unidirecionais).
+*   **Autenticação por E-mail (OTP)**: Login simplificado e sem senha, operando exclusivamente com e-mails institucionais do domínio `@ucsal.edu.br` e verificação via código de acesso descartável.
+*   **Histórico de Comentários**: Seção dedicada para visualização de feedbacks enviados por outros estudantes para o docente selecionado.
+*   **Médias Dinâmicas**: Notas e médias de estrelas atualizadas em tempo real na barra lateral e na visualização central do perfil.
 
-```
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+### Backend
+*   **ASP.NET Core 8.0 Web API**
+*   **Entity Framework Core 8.0**
+*   **PostgreSQL** (via Docker)
+*   **Npgsql.EntityFrameworkCore.PostgreSQL**
+
+### Frontend
+*   **HTML5 & CSS3** (Vanilla CSS com Design System baseado em variáveis)
+*   **JavaScript (ES6)** (Component Pattern assíncrono para consumo de APIs REST)
+*   **Razor Pages** (Pre-rendering inicial de templates no servidor)
+
+---
+
+## 📦 Estrutura do Projeto
+
+```text
 prof-eval-csharp/
-├── ProfEval.Api/                # Projeto Único (.NET 8 Web SDK)
-│   ├── Controllers/             # Controladores da API REST
-│   ├── Models/                  # Entidades (Student, Professor, Evaluation, VerificationCode)
-│   ├── Data/                    # DbContext do Entity Framework Core
-│   ├── Repositories/            # Implementação do Padrão Repository
-│   ├── Services/                # Serviços de Autenticação (AuthService)
-│   ├── Pages/                   # Páginas Razor (C# HTML Pre-renderizado)
-│   │   ├── Index.cshtml         # Página principal da aplicação
-│   │   └── Index.cshtml.cs      # Modelo de dados da página Index (C#)
-│   ├── wwwroot/                 # Arquivos estáticos do Frontend
-│   │   ├── css/styles.css       # Estilos da página
-│   │   └── js/                  # Orquestrador, componentes e serviços de API
-│   ├── Program.cs               # Configuração e inicialização do servidor C#
-│   └── appsettings.json         # Configuração de conexões e banco de dados
-├── docker-compose.yml           # Inicialização do banco PostgreSQL local
-└── README.md                    # Este arquivo (Instruções)
+├── ProfEval.Api/                # Projeto Principal (.NET 8 Web SDK)
+│   ├── Controllers/             # Endpoints REST (Auth, Professors, Evaluations)
+│   ├── Domain/                  # Entidades de Domínio e Contratos
+│   │   └── Entities/            # Modelagem (Student, Professor, Evaluation)
+│   ├── Infrastructure/          # Persistência e Acesso a Dados
+│   │   ├── Persistence/         # DbContext do Entity Framework Core
+│   │   └── Services/            # Serviços de Infraestrutura (E-mail SMTP)
+│   ├── Pages/                   # Razor Pages (Template SPA Principal)
+│   └── wwwroot/                 # Recursos Estáticos (Vanilla CSS, JS e Componentes)
+├── docker-compose.yml           # Configuração do PostgreSQL em container
+├── prof-eval-csharp.sln         # Arquivo de Solução do Visual Studio
+└── README.md                    # Documentação do projeto
 ```
 
 ---
 
-## 🚀 Como Executar o Projeto
+## ⚡ Como Executar o Projeto
 
-Siga estes passos simples para rodar a aplicação unificada localmente:
+Siga as instruções abaixo para configurar e rodar a aplicação localmente:
+
+### Pré-requisitos
+*   [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) instalado.
+*   [Docker](https://www.docker.com/) e Docker Compose instalados.
 
 ### 1. Inicializar o Banco de Dados (PostgreSQL)
-Certifique-se de que possui o Docker instalado e execute na raiz do projeto:
+Inicialize o container do PostgreSQL a partir da raiz do projeto executando:
 ```bash
 docker compose up -d
 ```
-Isso iniciará o container do PostgreSQL na porta `5432` com as configurações necessárias.
 
-### 2. Atualizar as Migrations (EF Core)
-Crie e atualize as tabelas no banco de dados executando o seguinte a partir da pasta raiz:
+### 2. Executar as Migrações do EF Core
+Para criar e atualizar as tabelas do banco de dados, certifique-se de instalar as ferramentas de CLI do EF e execute:
 ```bash
 cd ProfEval.Api
 dotnet ef database update
 ```
 
-### 3. Executar o Projeto C#
-Inicie o servidor do backend que servirá a API e a página web (a partir do diretório raiz ou da pasta `ProfEval.Api`):
+### 3. Iniciar o Servidor C#
+Execute a aplicação a partir do diretório raiz ou da pasta `ProfEval.Api`:
 ```bash
 dotnet run --project ProfEval.Api
 ```
 
 A aplicação estará disponível nos endereços:
-- **Página Web Integrada (Frontend)**: [http://localhost:5172](http://localhost:5172) ou [https://localhost:7284](https://localhost:7284)
-- **Documentação Interativa (Swagger)**: [https://localhost:7284/swagger](https://localhost:7284/swagger)
+*   **Portal da SPA (Interface Web)**: [http://localhost:5172](http://localhost:5172)
+*   **Documentação Swagger (API)**: [https://localhost:7284/swagger](https://localhost:7284/swagger) (se configurado HTTPS)
 
 ---
 
-## 🔑 Fluxo de Autenticação
+## 📄 Licença
 
-Para realizar avaliações, o usuário precisa estar logado com um e-mail institucional da UCSAL:
-
-1. Acesse [http://localhost:5172](http://localhost:5172) e clique em **Login** ou **Acessar**.
-2. Insira apenas seu e-mail do domínio `@ucsal.edu.br` (ex: `aluno.teste@ucsal.edu.br`) e clique em **Solicitar Código**.
-3. **Obtenção do Código (OTP)**:
-   * **Desenvolvimento**: O código gerado de 6 dígitos é exibido diretamente na interface (abaixo do campo de digitação), no console do desenvolvedor do navegador (F12) e nos logs do terminal da API.
-   * **Produção (SMTP)**: O código é disparado diretamente para a caixa de entrada do e-mail informado (caso as configurações SMTP estejam preenchidas).
-4. Digite o código recebido de 6 dígitos e clique em **Verificar**.
-
----
-
-## ✉️ Configuração de Envio de E-mails (SMTP)
-
-No arquivo `appsettings.json`, você pode configurar as credenciais do servidor SMTP para enviar e-mails de acesso reais:
-
-```json
-  "SmtpSettings": {
-    "Server": "smtp.provedor.com",
-    "Port": 587,
-    "SenderName": "Avaliação UCSAL",
-    "SenderEmail": "noreply@ucsal.edu.br",
-    "Username": "seu_usuario",
-    "Password": "sua_password",
-    "EnableSsl": true
-  }
-```
-*Se a chave `"Server"` for deixada em branco, o sistema automaticamente operará em modo **Mock** e exibirá o código nos logs do console (ideal para desenvolvimento).*
-
----
-
-## 🛡️ Arquitetura de Anonimato
-
-O processo de voto foi projetado para ser **estritamente anônimo**:
-* A coluna `student_id` na tabela `evaluations` foi marcada como `nullable` e é mantida como `NULL` no banco de dados.
-* A correspondência de voto único por aluno/professor é mantida por meio de um hash determinístico `SHA-256` (`anonymous_token`).
-* Não há rastreabilidade reversa das avaliações no banco de dados.
-
----
-
-## 📦 Preparando e Subindo para o GitHub
-
-Para subir o projeto no GitHub de forma limpa e segura, siga estes passos:
-
-### 1. Verificar Arquivos Ignorados
-O projeto já conta com um arquivo `.gitignore` configurado na raiz para evitar que arquivos de compilação (`bin/`, `obj/`), segredos locais (`.suo`, `*.user`), bancos SQLite de desenvolvimento e pastas de cache (`.gemini/`) sejam publicados.
-
-### 2. Inicializar o Repositório Git
-Na raiz do projeto, execute no terminal:
-```bash
-git init
-git add .
-git commit -m "feat: refactor frontend/backend with UCSAL standard and anonymous evaluations"
-```
-
-### 3. Vincular ao Repositório do GitHub
-Crie um repositório vazio no GitHub (sem inicializar com README ou .gitignore) e execute:
-```bash
-git branch -M main
-git remote add origin https://github.com/seu-usuario/seu-repositorio.git
-git push -u origin main
-```
+Este projeto é desenvolvido para fins de avaliação institucional da UCSAL.
