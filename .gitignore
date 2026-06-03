@@ -24,3 +24,7 @@ Thumbs.db
 ## EF Core / Database files
 *.db
 *.sqlite
+
+## Private Documents & Configurations
+INSTRUCOES_DESENVOLVIMENTO.md
+
