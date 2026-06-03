@@ -1,0 +1,160 @@
+@page
+@model IndexModel
+@{
+    Layout = null;
+}
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Avaliação UCSAL - Professor Evaluation System</title>
+    <link rel="stylesheet" href="/css/styles.css" asp-append-version="true" />
+  </head>
+  <body>
+    <div id="app" class="app">
+      <!-- Loading indicator -->
+      <div id="loading" class="loading-overlay" style="display: none">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Main container -->
+      <div class="main-container">
+        <!-- Header -->
+        <header class="header">
+          <div class="container header-content">
+            <div class="logo">
+              <h1>Avaliação UCSAL</h1>
+            </div>
+            <div id="userProfileHeader" class="user-profile-header">
+              <!-- Renderizado dinamicamente por AuthComponent -->
+              <div class="profile-visitor">
+                <span class="visitor-avatar">👤</span>
+                <span class="visitor-text">Visitante</span>
+                <button id="loginBtn" class="btn btn-secondary btn-sm" onclick="authComponent.showLoginModal()">Login</button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="content">
+          <div class="container">
+            <div class="layout-grid">
+              <!-- Left sidebar - Professor list -->
+              <aside class="sidebar">
+                <div class="sidebar-header">
+                  <h2>Professores</h2>
+                  <input
+                    type="text"
+                    id="searchProfessor"
+                    class="search-input"
+                    placeholder="Buscar professor..."
+                  />
+                </div>
+                <div id="professorList" class="professor-list">
+                  <div class="loading-state">Carregando professores...</div>
+                </div>
+              </aside>
+
+              <!-- Center - Professor detail and evaluation -->
+              <section class="main-section">
+                <div id="professorDetailCard" class="professor-detail-card-container">
+                  <div class="card-placeholder">
+                    <p>Selecione um professor para avaliar</p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="modal-close" onclick="authComponent.hideLoginModal()">&times;</span>
+        
+        <!-- Passo 1: Solicitar Código -->
+        <div id="loginEmailStep">
+          <div class="login-modal-header">
+            <div class="login-avatar-icon">🎓</div>
+            <h2>Acesso Acadêmico</h2>
+            <p>Digite seu e-mail institucional para receber um código de acesso.</p>
+          </div>
+          <form onsubmit="authComponent.handleRequestCode(event)">
+            <div class="form-group">
+              <label for="studentEmail">E-mail UCSAL</label>
+              <input
+                type="email"
+                id="studentEmail"
+                placeholder="seu.nome@ucsal.edu.br"
+                required
+              />
+              <span class="form-hint">Apenas e-mails terminados em @@ucsal.edu.br</span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Solicitar Código</button>
+          </form>
+        </div>
+
+        <!-- Passo 2: Verificar Código -->
+        <div id="loginCodeStep" style="display: none">
+          <div class="login-modal-header">
+            <div class="login-avatar-icon">✉️</div>
+            <h2>Verificar Código</h2>
+            <p>Digite o código de 6 dígitos enviado para o seu e-mail:</p>
+            <p id="emailPreview" style="font-weight: 600; color: var(--primary-color); margin-top: 4px; word-break: break-all;"></p>
+          </div>
+          <form onsubmit="authComponent.handleVerifyCode(event)">
+            <div class="form-group">
+              <label for="verificationCode">Código de Acesso</label>
+              <input
+                type="text"
+                id="verificationCode"
+                placeholder="000000"
+                maxlength="6"
+                pattern="[0-9]{6}"
+                required
+              />
+              <span class="form-hint">O código é exibido no console do desenvolvedor.</span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Verificar</button>
+            <button type="button" class="btn btn-secondary btn-block" style="margin-top: 10px;" onclick="authComponent.showEmailStep()">Voltar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for error/notifications messages -->
+    <div id="errorModal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="modal-close" onclick="document.getElementById('errorModal').style.display = 'none'">&times;</span>
+        <h2>Aviso</h2>
+        <p id="errorMessage"></p>
+        <button
+          class="btn btn-primary"
+          onclick="document.getElementById('errorModal').style.display = 'none'"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+
+    <!-- Serializa a lista inicial de professores direto no HTML para carregamento imediato -->
+    <script>
+        const initialProfessors = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Professors, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }));
+    </script>
+    
+    <!-- 1º Carrega o serviço base de comunicação -->
+    <script src="/js/services/api.js" asp-append-version="true"></script>
+    
+    <!-- 2º Carrega as estruturas visuais -->
+    <script src="/js/components/professorsComponent.js" asp-append-version="true"></script>
+    <script src="/js/components/authComponent.js" asp-append-version="true"></script>
+    <script src="/js/components/evaluationComponent.js" asp-append-version="true"></script>
+    
+    <!-- 3º Inicializa o app -->
+    <script src="/js/app.js" asp-append-version="true"></script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+@ProfEval.Api_HostAddress = http://localhost:5172
+
+GET {{ProfEval.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,26 @@
+## Build artifacts
+[Bb]in/
+[Oo]bj/
+[Pp]ublish/
+
+## Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Temporary / Logs / OS Files
+*.log
+.DS_Store
+Thumbs.db
+.gemini/
+
+## EF Core / Database files
+*.db
+*.sqlite
